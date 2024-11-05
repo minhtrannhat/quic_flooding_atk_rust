@@ -1,6 +1,6 @@
 # QUIC Reflection Attack Simulation
 
-Tested on Rust 1.81
+Tested on Rust 1.84
 
 ## Goals
 
@@ -9,10 +9,14 @@ Tested on Rust 1.81
 ## Setup
 
 - Install Rust
-- Run `cargo run`
+- Install `mkcert`
+- Setup an intermediate CA on your machine: `mkcert -install`
+- Generate SSL certs and private key for localhost: `mkcert localhost`
+- Run `cargo run --bin server 5050` to run the server on port 5050
+- Run `cargo run --bin client` (in a different terminal window) to run the client.
 
 ## Progress
 
-- [ ] Server implementation
-- [ ] Client (Victim) implementation
+- [x] Server implementation
+- [x] Client (Victim) implementation
 - [ ] Client (Bad Actor) implementation

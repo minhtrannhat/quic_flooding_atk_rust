@@ -1,1 +1,4 @@
 /target
+localhost-fullchain.pem
+localhost-key.pem
+localhost.pem
