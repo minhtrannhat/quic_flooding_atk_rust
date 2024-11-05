@@ -1,4 +1,4 @@
-# QUIC Reflection Attack Simulation
+# QUIC Flooding Attack Simulation
 
 Tested on Rust 1.84
 
@@ -18,5 +18,6 @@ Tested on Rust 1.84
 ## Progress
 
 - [x] Server implementation
-- [x] Client (Victim) implementation
-- [ ] Client (Bad Actor) implementation
+- [x] Client implementation
+- [ ] Attack Mechanism (scripts)
+- [ ] CPU usage benchmarking
