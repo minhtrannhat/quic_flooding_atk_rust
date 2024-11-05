@@ -1,5 +1,8 @@
 use clap::Parser;
-use std::{error::Error, net::SocketAddr, sync::Arc};
+use std::{
+    error::Error,
+    net::{IpAddr, Ipv4Addr, SocketAddr},
+};
 
 #[derive(Parser, Debug)]
 
@@ -12,40 +15,34 @@ struct Args {
 }
 
 use quinn::{
-    rustls::{self, pki_types::CertificateDer},
+    rustls::{self},
     ClientConfig, Endpoint,
 };
 
 pub fn make_client_endpoint(
     bind_addr: SocketAddr,
-    server_certs: &[&[u8]],
 ) -> Result<Endpoint, Box<dyn Error + Send + Sync + 'static>> {
-    let client_cfg = configure_client(server_certs)?;
+    let client_cfg = ClientConfig::with_platform_verifier();
     let mut endpoint = Endpoint::client(bind_addr)?;
     endpoint.set_default_client_config(client_cfg);
     Ok(endpoint)
 }
 
-fn configure_client(
-    server_certs: &[&[u8]],
-) -> Result<ClientConfig, Box<dyn Error + Send + Sync + 'static>> {
-    let mut certs = rustls::RootCertStore::empty();
-    for cert in server_certs {
-        certs.add(CertificateDer::from(*cert))?;
-    }
-
-    Ok(ClientConfig::with_root_certificates(Arc::new(certs))?)
-}
-
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
-    let args = Args::try_parse()?;
+    //let args = Args::try_parse()?;
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .expect("Failed to install rustls crypto provider");
 
-    let client_endpoint = make_client_endpoint("0.0.0.0:0".parse().unwrap(), &[&server_cert])?;
+    let client_endpoint = make_client_endpoint("0.0.0.0:0".parse().unwrap())?;
 
     // connect to server
     let connection = client_endpoint
-        .connect(server_addr, "localhost")
+        .connect(
+            SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 5050),
+            "localhost",
+        )
         .unwrap()
         .await
         .unwrap();
