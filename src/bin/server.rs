@@ -39,7 +39,6 @@ fn configure_server() -> Result<ServerConfig, Box<dyn Error + Send + Sync + 'sta
     Ok(server_config)
 }
 
-#[allow(unreachable_code)]
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
     let args = Args::try_parse()?;
@@ -48,22 +47,12 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
 
     let server_endpoint = make_server_endpoint(server_addr)?;
 
-    loop {
-        let server_endpoint_cloned = server_endpoint.clone();
+    while let Some(conn) = server_endpoint.accept().await {
+        println!("connected to {}", conn.remote_address());
 
-        // every time a connection is accepted, we spawn an async task
-        tokio::spawn(async move {
-            let incomming_conn = server_endpoint_cloned.accept().await.unwrap();
+        let _ = conn.accept()?.await;
 
-            let conn = incomming_conn.await.unwrap();
-
-            println!(
-                "[server] connection accepted: addr = {}",
-                conn.remote_address()
-            )
-
-            // client connection implicitly dropped here
-        });
+        // implicit drop the client connection here
     }
 
     Ok(())
