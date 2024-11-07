@@ -16,7 +16,7 @@ struct Args {
 
 use quinn::{
     rustls::{self},
-    ClientConfig, Endpoint,
+    ClientConfig, ConnectionError, Endpoint, VarInt,
 };
 
 pub fn make_client_endpoint(
@@ -49,11 +49,8 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
 
     println!("[client] connected: addr={}", connection.remote_address());
 
-    // Waiting for a stream will complete with an error when the server closes the connection
-    let _ = connection.accept_uni().await;
-
-    // Make sure the server has a chance to clean up
-    client_endpoint.wait_idle().await;
+    // random error code
+    client_endpoint.close(VarInt::from(100u8), b"get flooded buddy");
 
     Ok(())
 }
