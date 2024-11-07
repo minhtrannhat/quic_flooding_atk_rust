@@ -16,7 +16,7 @@ struct Args {
 
 use quinn::{
     rustls::{self},
-    ClientConfig, ConnectionError, Endpoint, VarInt,
+    ClientConfig, Endpoint, VarInt,
 };
 
 pub fn make_client_endpoint(

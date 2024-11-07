@@ -50,7 +50,9 @@ async fn main() -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
     while let Some(conn) = server_endpoint.accept().await {
         println!("connected to {}", conn.remote_address());
 
-        let _ = conn.accept()?.await;
+        let connection = conn.await?;
+
+        println!("error: {}", connection.closed().await);
 
         // implicit drop the client connection here
     }
